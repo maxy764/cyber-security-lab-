@@ -1,0 +1,113 @@
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cybersecurity Data Lab</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f5f2;
+      padding: 25px;
+    }
+    .container {
+      max-width: 420px;
+      margin: 35px auto;
+      padding: 24px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px #0002;
+    }
+    h2 { color: #16834a; }
+    input, textarea, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      margin: 9px 0;
+      font-size: 16px;
+    }
+    button {
+      background: #16834a;
+      color: white;
+      border: 0;
+      border-radius: 7px;
+    }
+    #status { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cybersecurity Data Lab</h2>
+    <p>Send a dummy message to your Firebase database.</p>
+
+    <input id="username" maxlength="40"
+      placeholder="Dummy username">
+
+    <textarea id="message" maxlength="200"
+      placeholder="Type a test message"></textarea>
+
+    <button id="send">Send test message</button>
+    <p id="status">Ready</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
+    import { getAuth, signInAnonymously }
+      from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+    import { getFirestore, collection, addDoc }
+      from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    // Replace this object with your Firebase config.
+    const firebaseConfig = {
+      apiKey: "AIzaSyCN0TEgxnGZbQYfAspbrc4CXwFql-nYXYY",
+      authDomain: "cyber-security-lab-93adb.firebaseapp.com",
+      projectId: "cyber-security-lab-93adb",
+      storageBucket: "cyber-security-lab-93adb.firebasestorage.app",
+      messagingSenderId: "366872509204",
+      appId: "1:366872509204:web:f87df0eb31a6b4a39da001"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const button = document.getElementById("send");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", async () => {
+      const username =
+        document.getElementById("username").value.trim();
+      const message =
+        document.getElementById("message").value.trim();
+
+      if (!username || !message) {
+        status.textContent = "Enter a dummy username and message.";
+        return;
+      }
+
+      button.disabled = true;
+      status.textContent = "Sending...";
+
+      try {
+        await signInAnonymously(auth);
+
+        await addDoc(collection(db, "demo_messages"), {
+          username,
+          message,
+          purpose: "cybersecurity_lab"
+        });
+
+        status.textContent = "Success! Test message sent.";
+      } catch (error) {
+        status.textContent = "Error: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
